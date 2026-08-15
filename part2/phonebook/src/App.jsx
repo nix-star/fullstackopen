@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Filter from './Filter'
 import PersonForm from './PersonForm'
 import Persons from './Persons'
+import Message from './Message'
 import personService from './service/person'
 
 const App = () => {
@@ -9,6 +10,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
+  const [newMessage, setNewMessage] = useState(null)
+  const [newError, setError] = useState(false)
 
   useEffect(() => {
     personService
@@ -38,8 +41,10 @@ const App = () => {
       .then(response => {
         console.log('response', response)
         setPersons(persons.concat(personObject))
+        setNewMessage(newName)
         setNewName('')
         setNewNumber('')
+        setInterval(() => setNewMessage(null), 5000)
       })
   }
 
@@ -66,6 +71,12 @@ const App = () => {
       })
       .catch(error => {
         console.error('Error updating person:', error)
+        setNewMessage(newName)
+        setError(true)
+        setInterval(() => {
+          setNewMessage(null)
+          setError(false)
+        }, 5000)
       })
   }
 
@@ -78,6 +89,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Message message={newMessage} error={newError} />
       <Filter search={newSearch} handler={handleChange(setNewSearch)}/>
       <h3>Add a new</h3>
       <PersonForm
