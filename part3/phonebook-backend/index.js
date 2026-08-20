@@ -1,9 +1,13 @@
 let persons = require('./persons-mock.js')
+const morgan = require('morgan')
 const express = require('express')
 
 const app = express()
 
 app.use(express.json())
+
+morgan.token('body', (request) => JSON.stringify(request.body))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 app.get('/info', (request, response) => {
   const date = new Date()
@@ -41,7 +45,6 @@ app.post('/api/persons', (request, response) => {
   }
 
   person.id = Math.floor(Math.random() * 1000000).toString()
-  console.log(person)
   persons = persons.concat(person)
   response.json(person)
 })
